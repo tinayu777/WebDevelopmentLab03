@@ -7,13 +7,13 @@ st.title("Web Development Lab03")
 # TODO: Fill out your team number, section, and team members
 
 st.header("CS 1301")
-st.subheader("Team XX, Web Development - Section X")
-st.subheader("Team Member 1, Team Member 2")
+st.subheader("Team 57, Web Development - Section D")
+st.subheader("Kristina Yu, Team Member 2")
 
 
 # Introduction
 # TODO: Write a quick description for all of your pages in this lab below, in the form:
-#       1. **Page Name**: Description
+#       1. **Kristina's Portfolio**: A record of Kristina's Education and Job Experience
 #       2. **Page Name**: Description
 #       3. **Page Name**: Description
 #       4. **Page Name**: Description
