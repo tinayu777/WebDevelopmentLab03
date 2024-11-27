@@ -23,8 +23,8 @@ Welcome to our Streamlit Web Development Lab03 app! You can navigate between the
 
 1. **Kristina's Portfolio**: A record of Kristina's Education and Job Experience
 2.
-3.
-4.
+3. **Weather Dashboard**: Input a city and your choice of temperature units to 
+4. **WeatherAI**: Choose a date and ask questions about the weather that day!
 
 """)
 
