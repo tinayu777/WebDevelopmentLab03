@@ -1,43 +1,33 @@
-import openai  # If using OpenAI, or similar library if using Gemini
+import openai  # For OpenAI API integration
+import streamlit as st
+import requests
 import json
 
-# Set your API key for the Google Gemini or OpenAI LLM
-API_KEY = 'your_api_key_here'
+# Set your API key for the OpenAI (or Google Gemini) LLM
+API_KEY = '579ca185eb5c3e9e35f93b2664bd0380'  # Replace with your actual OpenAI API key
 openai.api_key = API_KEY
 
+# Function to generate a weather report using OpenAI's GPT model
 def generate_weather_report(weather_data):
     prompt = f"Generate a weather forecast based on the following data: {weather_data}"
     
     try:
-        response = openai.Completion.create(
-            engine="gpt-4",  # or "google-gemini" if using Gemini
-            prompt=prompt,
+        # Adjust API call to match OpenAI's new API interface
+        response = openai.ChatCompletion.create(
+            model="gpt-4",  # or use "google-gemini" if you're using Gemini
+            messages=[{"role": "system", "content": "You are a helpful assistant."}, 
+                      {"role": "user", "content": prompt}],
             max_tokens=150
         )
-        report = response.choices[0].text.strip()
+        report = response['choices'][0]['message']['content'].strip()
         return report
     except Exception as e:
         return f"Error generating report: {str(e)}"
 
-import streamlit as st
-import requests
-import openai
-
-# Your OpenWeatherMap API key
-API_KEY = "your_openweathermap_api_key_here"
-
-# Streamlit setup
-st.title("Weather Analysis with LLM 🌤")
-st.markdown("Generate weather reports or interact with a weather chatbot based on real-time data.")
-
-# User inputs
-location = st.text_input("Enter city:", "Atlanta")
-forecast_date = st.date_input("Select date for forecast:", None)
-
-# Fetch weather data for the selected city
-def fetch_weather_data(location, date=None):
+# Function to fetch weather data from OpenWeatherMap API
+def fetch_weather_data(location):
     unit = "metric"  # Default to Celsius
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&units={unit}&appid={API_KEY}"
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&units={unit}&appid=your_openweathermap_api_key_here"
     
     try:
         response = requests.get(url).json()
@@ -49,6 +39,32 @@ def fetch_weather_data(location, date=None):
         st.error(f"Error fetching weather data: {str(e)}")
         return None
 
+# Function to generate chatbot responses
+def generate_chatbot_response(question, weather_data):
+    prompt = f"Given the weather data: {weather_data}, answer the following question: {question}"
+    
+    try:
+        # Adjust API call to match OpenAI's new API interface
+        response = openai.ChatCompletion.create(
+            model="gpt-4",  # or use "google-gemini" if you're using Gemini
+            messages=[{"role": "system", "content": "You are a helpful assistant."}, 
+                      {"role": "user", "content": prompt}],
+            max_tokens=100
+        )
+        chatbot_response = response['choices'][0]['message']['content'].strip()
+        return chatbot_response
+    except Exception as e:
+        return f"Error generating response: {str(e)}"
+
+# Streamlit setup
+st.title("Weather Analysis with LLM 🌤")
+st.markdown("Generate weather reports or interact with a weather chatbot based on real-time data.")
+
+# User inputs for city and forecast date
+location = st.text_input("Enter city:", "Atlanta")
+forecast_date = st.date_input("Select date for forecast:", None)
+
+# Fetch weather data for the selected city
 weather_data = fetch_weather_data(location)
 
 # If weather data is available, pass it to LLM for report generation
@@ -56,29 +72,16 @@ if weather_data:
     weather_report = generate_weather_report(weather_data)
     st.subheader("Generated Weather Report")
     st.write(weather_report)
-def generate_chatbot_response(question, weather_data):
-    prompt = f"Given the weather data: {weather_data}, answer the following question: {question}"
 
-    try:
-        response = openai.Completion.create(
-            engine="gpt-4",  # Replace with Gemini if needed
-            prompt=prompt,
-            max_tokens=100
-        )
-        chatbot_response = response.choices[0].text.strip()
-        return chatbot_response
-    except Exception as e:
-        return f"Error generating response: {str(e)}"
-
-# Chatbot interface
+# Chatbot interface for weather-related questions
 user_question = st.text_input("Ask the weather chatbot:", "")
 if user_question:
-    response = generate_chatbot_response(user_question, weather_data)
-    st.write(f"Chatbot: {response}")
-try:
-    weather_data = fetch_weather_data(location)
     if weather_data:
-        weather_report = generate_weather_report(weather_data)
-except Exception as e:
-    st.error(f"An error occurred: {str(e)}")
+        chatbot_response = generate_chatbot_response(user_question, weather_data)
+        st.write(f"Chatbot: {chatbot_response}")
+    else:
+        st.write("Sorry, no weather data available to answer your question.")
+
+
+
 
